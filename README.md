@@ -36,12 +36,13 @@
 或者在当前目录执行：
 
 ```powershell
-C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\server.ps1 -Port 8080
+C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\server.ps1 -HostName 0.0.0.0 -Port 8080
 ```
 
 启动后访问：
 
-- `http://localhost:8080/`
+- 服务器本机：`http://localhost:8080/`
+- 其他电脑或手机：`http://服务器IP:8080/`
 
 ## 默认管理员账号
 
@@ -95,17 +96,42 @@ C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionP
 - 手动录入正式成绩
 - 查看正式成绩总览、个人 PB 和完整成绩记录
 
-## 局域网使用说明
+## Web 端如何读取数据
 
-当前默认监听地址是本机：
+这个项目的网页端并不会直接打开 `data/store.json`。
 
-- `http://localhost:8080/`
+正确的工作方式是：
 
-如果后续你要让俱乐部其他电脑一起访问，我们下一步可以继续把它调整成局域网监听模式，并补上：
+1. 浏览器访问 `http://服务器IP:8080/`
+2. 页面里的 `app.js` 再请求同一台服务器上的 `/api/session`、`/api/dashboard`、`/api/auth/login`
+3. `server.ps1` 在服务器本地读取 `data/store.json`
+4. 后端把 JSON 结果返回给网页
 
-- 固定局域网地址访问
-- URL ACL 配置
-- Windows 防火墙放行说明
+也就是说：
+
+- `store.json` 仍然只保存在服务器本地
+- 但网页端可以通过同一个后端接口间接读取和写入这份数据
+- 会员注册、登录、成绩提交、管理员审批，都会写回服务器上的 `data/store.json`
+
+如果你是直接双击打开本地 `index.html`，或者把前端放到别的地方单独访问，就不会连到这份真实数据。必须通过 PowerShell 服务提供的地址打开网页。
+
+## 局域网 / 外网使用说明
+
+当前默认启动方式已经改成监听所有网卡：
+
+- `0.0.0.0:8080`
+
+因此只要服务已启动，你就可以使用：
+
+- 本机访问：`http://localhost:8080/`
+- 局域网访问：`http://服务器内网IP:8080/`
+- 公网访问：`http://服务器公网IP:8080/`
+
+要让其他设备正常访问，还需要同时满足：
+
+- Windows 防火墙放行 `8080`
+- 云服务器安全组 / 入站规则放行 `8080`
+- 启动网页时使用 `http://服务器IP:8080/`，不要直接打开磁盘里的 `index.html`
 
 ## 当前版本定位
 

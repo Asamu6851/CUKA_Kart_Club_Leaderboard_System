@@ -1,6 +1,6 @@
 param(
   [int]$Port = 8080,
-  [string]$HostName = "localhost"
+  [string]$HostName = "0.0.0.0"
 )
 
 Set-StrictMode -Version Latest
@@ -224,6 +224,43 @@ function Read-HttpRequest {
 function Write-Log {
   param([string]$Message)
   Write-Host ("[{0}] {1}" -f (Get-Date -Format "yyyy-MM-dd HH:mm:ss"), $Message)
+}
+
+function Get-AdvertisedUrls {
+  param(
+    [string]$HostName,
+    [int]$Port
+  )
+
+  $urls = New-Object System.Collections.Generic.List[string]
+
+  if ($HostName -eq "*" -or $HostName -eq "0.0.0.0") {
+    $urls.Add(("http://localhost:{0}/" -f $Port))
+
+    try {
+      [System.Net.NetworkInformation.NetworkInterface]::GetAllNetworkInterfaces() |
+        Where-Object { $_.OperationalStatus -eq [System.Net.NetworkInformation.OperationalStatus]::Up } |
+        ForEach-Object {
+          $_.GetIPProperties().UnicastAddresses |
+            Where-Object {
+              $_.Address.AddressFamily -eq [System.Net.Sockets.AddressFamily]::InterNetwork -and
+              -not [System.Net.IPAddress]::IsLoopback($_.Address)
+            } |
+            ForEach-Object {
+              $urls.Add(("http://{0}:{1}/" -f $_.Address.IPAddressToString, $Port))
+            }
+        }
+    } catch {
+      # If address enumeration fails we still keep localhost as a fallback hint.
+    }
+  } elseif ($HostName -eq "localhost" -or $HostName -eq "127.0.0.1") {
+    $urls.Add(("http://localhost:{0}/" -f $Port))
+    $urls.Add(("http://127.0.0.1:{0}/" -f $Port))
+  } else {
+    $urls.Add(("http://{0}:{1}/" -f $HostName, $Port))
+  }
+
+  return @($urls | Sort-Object -Unique)
 }
 
 function Ensure-Directories {
@@ -1679,7 +1716,6 @@ function Handle-ApiRequest {
 
 Ensure-Directories
 
-$prefix = "http://{0}:{1}/" -f $HostName, $Port
 $ipAddress = if ($HostName -eq "*" -or $HostName -eq "0.0.0.0") {
   [System.Net.IPAddress]::Any
 } elseif ($HostName -eq "localhost" -or $HostName -eq "127.0.0.1") {
@@ -1691,7 +1727,10 @@ $listener = [System.Net.Sockets.TcpListener]::new($ipAddress, $Port)
 $listener.Start()
 
 Write-Log "CUKA server started."
-Write-Log "Open: $prefix"
+Write-Log ("Listening on {0}:{1}" -f $HostName, $Port)
+foreach ($url in (Get-AdvertisedUrls -HostName $HostName -Port $Port)) {
+  Write-Log "Open: $url"
+}
 Write-Log "Default admin: CUKA_Admin / Admin123456"
 Write-Log "Press Ctrl + C to stop."
 
