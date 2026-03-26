@@ -1,0 +1,492 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CUKA 联网圈速后台</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <main class="shell">
+    <section id="authScreen" class="auth-screen">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">CUKA Kart Club</p>
+          <h1>CUKA圈速榜</h1>
+          <p class="subtitle">
+            会员提交截图和成绩，管理员在线审批后自动进入正式榜单。
+          </p>          
+        </div>
+      </header>
+
+      <section class="auth-grid">
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <p class="card-kicker">Login</p>
+              <h2>账号登录</h2>
+            </div>
+          </div>
+
+          <form id="loginForm" class="form-grid">
+            <label class="field">
+              <span>用户名</span>
+              <input id="loginUsername" name="username" type="text" autocomplete="username" placeholder="例如 admin" required>
+            </label>
+
+            <label class="field">
+              <span>密码</span>
+              <input id="loginPassword" name="password" type="password" autocomplete="current-password" placeholder="至少 6 位" required>
+            </label>
+
+            <div class="form-actions">
+              <button class="button" type="submit">登录系统</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="card">
+          <div class="card-head">
+            <div>
+              <p class="card-kicker">Register</p>
+              <h2>会员注册</h2>
+            </div>
+          </div>
+
+          <form id="registerForm" class="form-grid">
+            <div class="field-group">
+              <label class="field">
+                <span>用户名</span>
+                <input id="registerUsername" name="username" type="text" placeholder="3-20 位字母数字下划线" required>
+              </label>
+
+              <label class="field">
+                <span>密码</span>
+                <input id="registerPassword" name="password" type="password" placeholder="至少 6 位" required>
+              </label>
+            </div>
+
+            <div class="field-group">
+              <label class="field">
+                <span>微信/抖音群昵称</span>
+                <input id="registerNickname" name="nickname" type="text" placeholder="例如：SRC_Asamu(微信)" required>
+              </label>
+            </div>
+
+            <div class="form-actions">
+              <button class="button secondary" type="submit">提交注册申请</button>
+              <p class="muted">注册申请提交后，需要管理员审核通过才能登录。</p>
+            </div>
+          </form>
+        </article>
+      </section>
+    </section>
+
+    <section id="appScreen" class="app-screen hidden">
+      <header class="topbar card">
+        <div>
+          <p class="eyebrow">CUKA Network Board</p>
+          <h1>CUKA圈速榜</h1>
+          <p class="subtitle small">CUKA圈速交流平台！</p>
+        </div>
+
+        <div class="topbar-actions">
+          <div id="userSummary" class="user-summary"></div>
+          <button id="refreshButton" class="button ghost" type="button">刷新数据</button>
+          <button id="logoutButton" class="button" type="button">退出登录</button>
+        </div>
+      </header>
+
+      <section id="statsGrid" class="stats-grid"></section>
+
+      <nav id="tabBar" class="tab-bar"></nav>
+
+      <section class="panel-stack">
+        <section class="panel card is-active" data-panel="overview">
+          <div class="card-head">
+            <div>
+              <p class="card-kicker">Overview</p>
+              <h2>正式成绩总览</h2>
+            </div>
+            <div class="inline-filters">
+              <select id="overviewTrackFilter"></select>
+            </div>
+          </div>
+
+          <div class="panel-grid">
+            <div class="table-card">
+              <h3>赛道排行榜</h3>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>排名</th>
+                      <th>昵称</th>
+                      <th>最快圈速</th>
+                      <th>日期</th>
+                      <th>车型</th>
+                      <th>最终排名</th>
+                    </tr>
+                  </thead>
+                  <tbody id="leaderboardBody"></tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="table-card">
+              <h3>会员个人 PB</h3>
+              <div class="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>昵称</th>
+                      <th>赛道</th>
+                      <th>最快圈速</th>
+                      <th>车型</th>
+                      <th>与赛道第一差值</th>
+                    </tr>
+                  </thead>
+                  <tbody id="pbBody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel card" data-panel="records">
+          <div class="card-head">
+            <div>
+              <p class="card-kicker">Official Archive</p>
+              <h2>正式成绩记录</h2>
+            </div>
+            <div class="inline-filters">
+              <input id="recordKeyword" type="text" placeholder="搜索昵称、赛道、车型、备注">
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>日期</th>
+                  <th>昵称</th>
+                  <th>赛道</th>
+                  <th>圈速</th>
+                  <th>车型</th>
+                  <th>最终排名</th>
+                  <th>车号</th>
+                  <th>来源</th>
+                  <th>截图</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="officialRecordsBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel card hidden" data-role-panel="member" data-panel="member-submit">
+          <div class="card-head">
+            <div>
+              <p class="card-kicker">Member Submit</p>
+              <h2>会员提交成绩</h2>
+            </div>
+          </div>
+
+          <form id="memberSubmissionForm" class="form-grid">
+            <div class="field-group">
+              <label class="field">
+                <span>赛道</span>
+                <select id="submissionTrackId" name="trackId" required></select>
+              </label>
+
+              <label class="field">
+                <span>日期</span>
+                <input id="submissionDate" name="date" type="date" required>
+              </label>
+            </div>
+
+            <div class="field-group">
+              <label class="field">
+                <span>圈速</span>
+                <input id="submissionLapTime" name="lapTime" type="text" placeholder="例如 1:02.345" required>
+              </label>
+
+              <label class="field">
+                <span>最终排名</span>
+                <input id="submissionRanking" name="ranking" type="number" min="1" placeholder="可选">
+              </label>
+            </div>
+
+            <div class="field-group">
+              <label class="field">
+                <span>车型</span>
+                <select id="submissionKartType" name="kartType" required></select>
+              </label>
+
+              <label class="field">
+                <span>车号</span>
+                <input id="submissionKartNo" name="kartNo" type="text" maxlength="20" placeholder="例如 K12">
+              </label>
+            </div>
+
+            <div class="field-group">
+              <label class="field">
+                <span>天气 / 场地</span>
+                <input id="submissionWeather" name="weather" type="text" maxlength="50" placeholder="晴天 / 干地">
+              </label>
+
+              <label class="field">
+                <span>成绩截图</span>
+                <input id="submissionScreenshot" name="screenshot" type="file" accept="image/*" required>
+              </label>
+            </div>
+
+            <label class="field">
+              <span>备注</span>
+              <textarea id="submissionNote" name="note" rows="3" maxlength="200" placeholder="例如：练习赛、排位赛、轮胎状态"></textarea>
+            </label>
+
+            <div class="form-actions">
+              <button class="button" type="submit">提交等待审批</button>
+              <p class="muted">会员提交后不会立即进入正式榜单，需管理员审批。</p>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel card hidden" data-role-panel="member" data-panel="member-history">
+          <div class="card-head">
+            <div>
+              <p class="card-kicker">My Submissions</p>
+              <h2>我的提交记录</h2>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>提交时间</th>
+                  <th>赛道</th>
+                  <th>圈速</th>
+                  <th>车型</th>
+                  <th>最终排名</th>
+                  <th>状态</th>
+                  <th>审核说明</th>
+                  <th>截图</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="memberSubmissionsBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel card hidden" data-role-panel="admin" data-panel="admin-approve">
+          <div class="card-head">
+            <div>
+              <p class="card-kicker">Review Queue</p>
+              <h2>待审批成绩</h2>
+            </div>
+          </div>
+          <div id="pendingSubmissionList" class="review-grid"></div>
+        </section>
+
+        <section class="panel card hidden" data-role-panel="admin" data-panel="admin-record">
+          <div class="card-head">
+            <div>
+              <p class="card-kicker">Admin Entry</p>
+              <h2>管理员直接录入正式成绩</h2>
+            </div>
+          </div>
+
+          <form id="adminRecordForm" class="form-grid">
+            <div class="field-group">
+              <label class="field">
+                <span>会员昵称</span>
+                <select id="adminRecordMemberId" name="memberId" required></select>
+              </label>
+
+              <label class="field">
+                <span>赛道</span>
+                <select id="adminRecordTrackId" name="trackId" required></select>
+              </label>
+            </div>
+
+            <div class="field-group">
+              <label class="field">
+                <span>圈速</span>
+                <input id="adminRecordLapTime" name="lapTime" type="text" placeholder="例如 58.976" required>
+              </label>
+
+              <label class="field">
+                <span>日期</span>
+                <input id="adminRecordDate" name="date" type="date" required>
+              </label>
+            </div>
+
+            <div class="field-group">
+              <label class="field">
+                <span>最终排名</span>
+                <input id="adminRecordRanking" name="ranking" type="number" min="1" placeholder="可选">
+              </label>
+
+              <label class="field">
+                <span>车型</span>
+                <select id="adminRecordKartType" name="kartType" required></select>
+              </label>
+            </div>
+
+            <div class="field-group">
+              <label class="field">
+                <span>车号</span>
+                <input id="adminRecordKartNo" name="kartNo" type="text" maxlength="20">
+              </label>
+
+              <label class="field">
+                <span>天气 / 场地</span>
+                <input id="adminRecordWeather" name="weather" type="text" maxlength="50">
+              </label>
+            </div>
+
+            <label class="field">
+              <span>备注</span>
+              <textarea id="adminRecordNote" name="note" rows="3" maxlength="200"></textarea>
+            </label>
+
+            <div class="form-actions">
+              <button class="button" type="submit">录入正式成绩</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="panel card hidden" data-role-panel="admin" data-panel="admin-members">
+          <div class="card-head">
+            <div>
+              <p class="card-kicker">Members</p>
+              <h2>会员账号管理</h2>
+            </div>
+          </div>
+
+          <div class="panel-grid">
+            <form id="adminMemberForm" class="form-grid subcard">
+              <h3>新增会员账号</h3>
+              <div class="field-group">
+                <label class="field">
+                  <span>用户名</span>
+                  <input id="adminMemberUsername" name="username" type="text" required>
+                </label>
+
+                <label class="field">
+                  <span>密码</span>
+                  <input id="adminMemberPassword" name="password" type="password" required>
+                </label>
+              </div>
+              <div class="field-group">
+                <label class="field">
+                  <span>微信/抖音群昵称</span>
+                  <input id="adminMemberNickname" name="nickname" type="text" required>
+                </label>
+              </div>
+              <div class="form-actions">
+                <button class="button secondary" type="submit">创建会员</button>
+                <p class="muted">管理员创建的会员账号会直接生效，自助注册账号需要先审核。</p>
+              </div>
+            </form>
+
+            <div class="subcard">
+              <h3>会员列表</h3>
+              <div class="table-wrap compact-table">
+                <table>
+                  <thead>
+                <tr>
+                  <th>群昵称</th>
+                  <th>用户名</th>
+                  <th>状态</th>
+                  <th>正式成绩</th>
+                  <th>待审</th>
+                  <th>最佳圈速</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="memberAccountsBody"></tbody>
+            </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel card hidden" data-role-panel="admin" data-panel="admin-tracks">
+          <div class="card-head">
+            <div>
+              <p class="card-kicker">Tracks</p>
+              <h2>赛道管理</h2>
+            </div>
+          </div>
+
+          <div class="panel-grid">
+            <form id="trackForm" class="form-grid subcard">
+              <h3>新增赛道</h3>
+              <div class="field-group">
+                <label class="field">
+                  <span>赛道名称</span>
+                  <input id="trackName" name="name" type="text" required>
+                </label>
+
+                <label class="field">
+                  <span>地点</span>
+                  <input id="trackLocation" name="location" type="text">
+                </label>
+              </div>
+              <div class="field-group">
+                <label class="field">
+                  <span>长度（米）</span>
+                  <input id="trackLength" name="length" type="number" min="0">
+                </label>
+
+                <label class="field">
+                  <span>布局 / 方向</span>
+                  <input id="trackLayout" name="layout" type="text">
+                </label>
+              </div>
+              <label class="field">
+                <span>备注</span>
+                <textarea id="trackNote" name="note" rows="3"></textarea>
+              </label>
+              <div class="form-actions">
+                <button class="button secondary" type="submit">创建赛道</button>
+              </div>
+            </form>
+
+            <div class="subcard">
+              <h3>赛道列表</h3>
+              <div class="table-wrap compact-table">
+                <table>
+                  <thead>
+                <tr>
+                  <th>赛道</th>
+                  <th>地点</th>
+                  <th>长度</th>
+                  <th>布局</th>
+                  <th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="trackListBody"></tbody>
+            </table>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
+

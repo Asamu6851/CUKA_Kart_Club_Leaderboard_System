@@ -1,0 +1,11 @@
+data/store.json
+data/uploads/
+
+*.log
+*.out.log
+*.err.log
+*.pid
+
+_approval_test/
+_compat_test/
+_delete_test/
