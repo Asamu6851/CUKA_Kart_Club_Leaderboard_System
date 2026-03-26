@@ -36,13 +36,14 @@
 或者在当前目录执行：
 
 ```powershell
-C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\server.ps1 -HostName 0.0.0.0 -Port 8080
+C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\server.ps1 -HostName 0.0.0.0 -Port 80
 ```
 
 启动后访问：
 
-- 服务器本机：`http://localhost:8080/`
-- 其他电脑或手机：`http://服务器IP:8080/`
+- 服务器本机：`http://localhost/`
+- 其他电脑或手机：`http://服务器IP/`
+- 使用域名：`http://你的域名/`
 
 ## 默认管理员账号
 
@@ -102,7 +103,7 @@ C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionP
 
 正确的工作方式是：
 
-1. 浏览器访问 `http://服务器IP:8080/`
+1. 浏览器访问 `http://服务器IP/` 或 `http://你的域名/`
 2. 页面里的 `app.js` 再请求同一台服务器上的 `/api/session`、`/api/dashboard`、`/api/auth/login`
 3. `server.ps1` 在服务器本地读取 `data/store.json`
 4. 后端把 JSON 结果返回给网页
@@ -119,19 +120,20 @@ C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionP
 
 当前默认启动方式已经改成监听所有网卡：
 
-- `0.0.0.0:8080`
+- `0.0.0.0:80`
 
 因此只要服务已启动，你就可以使用：
 
-- 本机访问：`http://localhost:8080/`
-- 局域网访问：`http://服务器内网IP:8080/`
-- 公网访问：`http://服务器公网IP:8080/`
+- 本机访问：`http://localhost/`
+- 局域网访问：`http://服务器内网IP/`
+- 公网访问：`http://服务器公网IP/`
+- 域名访问：`http://你的域名/`
 
 要让其他设备正常访问，还需要同时满足：
 
-- Windows 防火墙放行 `8080`
-- 云服务器安全组 / 入站规则放行 `8080`
-- 启动网页时使用 `http://服务器IP:8080/`，不要直接打开磁盘里的 `index.html`
+- Windows 防火墙放行 `80`
+- 云服务器安全组 / 入站规则放行 `80`
+- 启动网页时使用 `http://服务器IP/` 或 `http://你的域名/`，不要直接打开磁盘里的 `index.html`
 
 ## 当前版本定位
 

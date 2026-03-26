@@ -1,5 +1,5 @@
 param(
-  [int]$Port = 8080,
+  [int]$Port = 80,
   [string]$HostName = "0.0.0.0"
 )
 
