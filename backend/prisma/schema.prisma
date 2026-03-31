@@ -1,0 +1,240 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  ACTIVE
+  PENDING
+  REJECTED
+  DISABLED
+}
+
+enum RoleCode {
+  SUPER_ADMIN
+  ADMIN
+  MEMBER
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ProfilePhotoDisplayType {
+  AVATAR
+  PORTRAIT
+}
+
+enum SubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum RecordSourceType {
+  ADMIN
+  SUBMISSION
+}
+
+enum AuditTargetType {
+  USER
+  MEMBER
+  TRACK
+  SUBMISSION
+  RECORD
+  FILE
+  SYSTEM
+}
+
+model User {
+  id             String          @id @default(cuid())
+  username       String          @unique
+  nickname       String
+  passwordSalt   String
+  passwordHash   String
+  status         UserStatus      @default(PENDING)
+  lastLoginAt    DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  roles          UserRole[]
+  memberProfile  MemberProfile?
+  submissions    Submission[]    @relation("SubmissionMember")
+  approvedBy     Submission[]    @relation("SubmissionReviewedBy")
+  records        Record[]        @relation("RecordMember")
+  recordApproves Record[]        @relation("RecordApprovedBy")
+  refreshTokens  RefreshToken[]
+  auditLogs      AuditLog[]
+}
+
+model Role {
+  id        String     @id @default(cuid())
+  code      RoleCode   @unique
+  name      String
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  users     UserRole[]
+}
+
+model UserRole {
+  id        String   @id @default(cuid())
+  userId    String
+  roleId    String
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+}
+
+model MemberProfile {
+  id                String                  @id @default(cuid())
+  userId            String                  @unique
+  approvalStatus    ApprovalStatus          @default(PENDING)
+  reviewNote        String?
+  reviewedById      String?
+  reviewedAt        DateTime?
+  photoDisplayType  ProfilePhotoDisplayType?
+  photoBucket       String?
+  photoObjectKey    String?
+  photoFileName     String?
+  photoMimeType     String?
+  photoFileSize     Int?
+  photoUpdatedAt    DateTime?
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+  user              User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([approvalStatus])
+}
+
+model Track {
+  id              String       @id @default(cuid())
+  name            String
+  location        String?
+  lengthMeters    Int?
+  layout          String?
+  note            String?
+  isEnabled       Boolean      @default(true)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  submissions     Submission[]
+  records         Record[]
+
+  @@index([name])
+}
+
+model KartType {
+  id          String       @id @default(cuid())
+  code        String       @unique
+  name        String
+  sortOrder   Int          @default(0)
+  isEnabled   Boolean      @default(true)
+  submissions Submission[]
+  records     Record[]
+}
+
+model Submission {
+  id            String              @id @default(cuid())
+  memberId      String
+  trackId       String
+  kartTypeId    String
+  lapTimeMs     Int
+  lapTimeText   String
+  raceDate      DateTime
+  finalRanking  Int?
+  kartNo        String?
+  weather       String?
+  note          String?
+  status        SubmissionStatus    @default(PENDING)
+  reviewNote    String?
+  reviewedById  String?
+  reviewedAt    DateTime?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  member        User                @relation("SubmissionMember", fields: [memberId], references: [id], onDelete: Cascade)
+  track         Track               @relation(fields: [trackId], references: [id], onDelete: Restrict)
+  kartType      KartType            @relation(fields: [kartTypeId], references: [id], onDelete: Restrict)
+  reviewedBy    User?               @relation("SubmissionReviewedBy", fields: [reviewedById], references: [id], onDelete: SetNull)
+  attachments   SubmissionAttachment[]
+  record        Record?
+
+  @@index([memberId, status])
+  @@index([trackId, status])
+}
+
+model SubmissionAttachment {
+  id            String      @id @default(cuid())
+  submissionId  String
+  bucket        String
+  objectKey     String
+  fileName      String
+  mimeType      String
+  fileSize      Int
+  createdAt     DateTime    @default(now())
+  submission    Submission  @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+
+  @@index([submissionId])
+}
+
+model Record {
+  id                 String           @id @default(cuid())
+  memberId           String
+  trackId            String
+  kartTypeId         String
+  sourceType         RecordSourceType
+  sourceSubmissionId String?          @unique
+  lapTimeMs          Int
+  lapTimeText        String
+  raceDate           DateTime
+  finalRanking       Int?
+  kartNo             String?
+  weather            String?
+  note               String?
+  approvedById       String?
+  approvedAt         DateTime?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  member             User             @relation("RecordMember", fields: [memberId], references: [id], onDelete: Cascade)
+  track              Track            @relation(fields: [trackId], references: [id], onDelete: Restrict)
+  kartType           KartType         @relation(fields: [kartTypeId], references: [id], onDelete: Restrict)
+  sourceSubmission   Submission?      @relation(fields: [sourceSubmissionId], references: [id], onDelete: SetNull)
+  approvedBy         User?            @relation("RecordApprovedBy", fields: [approvedById], references: [id], onDelete: SetNull)
+
+  @@index([memberId, trackId])
+  @@index([trackId, lapTimeMs])
+}
+
+model RefreshToken {
+  id         String   @id @default(cuid())
+  userId     String
+  tokenHash  String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  revokedAt  DateTime?
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, expiresAt])
+}
+
+model AuditLog {
+  id             String          @id @default(cuid())
+  operatorUserId String?
+  action         String
+  targetType     AuditTargetType
+  targetId       String?
+  detailJson     Json?
+  ip             String?
+  userAgent      String?
+  createdAt      DateTime        @default(now())
+  operatorUser   User?           @relation(fields: [operatorUserId], references: [id], onDelete: SetNull)
+
+  @@index([targetType, targetId])
+  @@index([action, createdAt])
+}

@@ -1,6 +1,6 @@
-# CUKA 联网圈速后台
+# CUKA在线圈速榜
 
-这是一个适合俱乐部内部统一管理的联网版圈速系统，包含会员端和管理员端两套功能。
+这是面向卡丁车俱乐部正式运行的在线圈速管理系统，包含会员端与管理员端两套完整功能。
 
 ## 已实现功能
 
@@ -137,7 +137,90 @@ C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionP
 
 ## 当前版本定位
 
-这是一个已经具备联网和审批流的可运行雏形，适合俱乐部先内部试用。
+当前仓库已经具备正式运行所需的核心业务链路，可用于俱乐部多人在线使用。
+
+如果你准备升级为 Linux 正式版多用户系统，可以继续查看：
+
+- [Linux 正式版架构方案](./ARCHITECTURE_LINUX.md)
+
+## Linux 正式版骨架
+
+仓库现在已经新增了一套 Linux 正式版项目骨架，用于逐步替换当前的 PowerShell + JSON 版本。
+
+目录结构：
+
+- `frontend/`：Vue 3 + TypeScript + Vite + Pinia + Element Plus
+- `backend/`：NestJS + TypeScript + Prisma
+- `infra/nginx/`：统一网关配置
+- `docker-compose.yml`：Linux 一体化容器编排
+- `.env.example`：部署环境变量示例
+
+### 新旧两套版本的关系
+
+- 根目录的 `index.html`、`app.js`、`styles.css`、`server.ps1` 仍然是当前可运行旧版
+- `frontend/` 和 `backend/` 是正式版新骨架
+- 现阶段适合并行推进，不建议立刻删除旧版
+
+### 新版技术栈
+
+- 前端：`Vue 3 + TypeScript + Vite + Pinia + Element Plus`
+- 后端：`NestJS + TypeScript + Prisma`
+- 数据层：`PostgreSQL + Redis + MinIO`
+- 部署层：`Nginx + Docker Compose + Ubuntu`
+
+### 新版本地 / Linux 启动方式
+
+1. 复制环境变量文件：
+
+```bash
+cp .env.example .env
+```
+
+2. 按需修改 `.env` 中的数据库密码、JWT 密钥和域名相关配置。
+
+3. 启动容器：
+
+```bash
+docker compose up -d --build
+```
+
+4. 启动后访问：
+
+- 前端首页：`http://服务器IP/`
+- 后端健康检查：`http://服务器IP/api/v1/health`
+
+### 当前骨架已包含的内容
+
+- 前端路由、状态管理和 API 请求封装
+- 后端模块化目录结构
+- Prisma 数据模型初稿
+- Docker Compose 容器编排
+- Nginx 网关配置
+- PostgreSQL + JWT 真实登录模块基础实现
+- 默认管理员自动初始化能力
+
+### 当前骨架还没有完成的内容
+
+- PostgreSQL 首版迁移文件
+- 会员、赛道、成绩、审批的完整 CRUD
+- MinIO 文件上传与访问控制
+- 旧版 `store.json` 到 PostgreSQL 的迁移脚本
+
+### 当前默认管理员
+
+新版后端启动时会自动执行 `prisma db push`，并根据环境变量初始化默认管理员账号。
+
+默认值如下：
+
+- 用户名：`CUKA_Admin`
+- 昵称：`CUKA Admin`
+- 密码：`Admin123456`
+
+你可以在根目录 `.env` 里修改这些变量：
+
+- `DEFAULT_ADMIN_USERNAME`
+- `DEFAULT_ADMIN_NICKNAME`
+- `DEFAULT_ADMIN_PASSWORD`
 
 下一步如果你继续要升级，我建议按这个顺序走：
 
