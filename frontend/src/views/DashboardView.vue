@@ -123,29 +123,31 @@
           <el-button :loading="loading" @click="loadDashboard">刷新</el-button>
         </div>
 
-        <el-table :data="tracks" empty-text="暂无赛道数据" stripe>
-          <el-table-column label="赛道名称" prop="name" min-width="170" />
-          <el-table-column label="地点" prop="location" min-width="130" />
-          <el-table-column label="长度" width="110">
-            <template #default="{ row }">
-              {{ formatTrackLength(row.lengthMeters) }}
-            </template>
-          </el-table-column>
-          <el-table-column label="布局" prop="layout" min-width="140" />
-          <el-table-column label="备注" prop="note" min-width="180" />
-          <el-table-column label="操作" width="120" align="right">
-            <template #default="{ row }">
-              <el-button
-                :loading="deletingTrackId === row.id"
-                link
-                type="danger"
-                @click="deleteTrack(row)"
-              >
-                停用
-              </el-button>
-            </template>
-          </el-table-column>
-        </el-table>
+        <div class="table-shell">
+          <el-table :data="tracks" empty-text="暂无赛道数据" stripe>
+            <el-table-column label="赛道名称" prop="name" min-width="170" />
+            <el-table-column label="地点" prop="location" min-width="130" />
+            <el-table-column label="长度" width="110">
+              <template #default="{ row }">
+                {{ formatTrackLength(row.lengthMeters) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="布局" prop="layout" min-width="140" />
+            <el-table-column label="备注" prop="note" min-width="180" />
+            <el-table-column label="操作" width="120" align="right">
+              <template #default="{ row }">
+                <el-button
+                  :loading="deletingTrackId === row.id"
+                  link
+                  type="danger"
+                  @click="deleteTrack(row)"
+                >
+                  停用
+                </el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
       </section>
     </section>
 
@@ -160,17 +162,19 @@
         <el-button :loading="loading" @click="loadDashboard">刷新</el-button>
       </div>
 
-      <el-table :data="tracks" empty-text="暂无赛道数据" stripe>
-        <el-table-column label="赛道名称" prop="name" min-width="180" />
-        <el-table-column label="地点" prop="location" min-width="140" />
-        <el-table-column label="长度" width="110">
-          <template #default="{ row }">
-            {{ formatTrackLength(row.lengthMeters) }}
-          </template>
-        </el-table-column>
-        <el-table-column label="布局" prop="layout" min-width="140" />
-        <el-table-column label="备注" prop="note" min-width="180" />
-      </el-table>
+      <div class="table-shell">
+        <el-table :data="tracks" empty-text="暂无赛道数据" stripe>
+          <el-table-column label="赛道名称" prop="name" min-width="180" />
+          <el-table-column label="地点" prop="location" min-width="140" />
+          <el-table-column label="长度" width="110">
+            <template #default="{ row }">
+              {{ formatTrackLength(row.lengthMeters) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="布局" prop="layout" min-width="140" />
+          <el-table-column label="备注" prop="note" min-width="180" />
+        </el-table>
+      </div>
     </section>
 
     <section class="panel-card form-card">
@@ -204,31 +208,33 @@
         当前显示 {{ filteredDirectoryMembers.length }} / {{ members.length }} 位会员
       </p>
 
-      <el-table :data="paginatedDirectoryMembers" empty-text="暂无会员数据" stripe>
-        <el-table-column label="昵称" min-width="160">
-          <template #default="{ row }">
-            <el-button
-              class="member-link-button"
-              link
-              type="primary"
-              @click="openDriverProfile(row.id)"
-            >
-              {{ row.nickname }}
-            </el-button>
-          </template>
-        </el-table-column>
-        <el-table-column label="用户名" prop="username" min-width="160" />
-        <el-table-column label="加入时间" min-width="180">
-          <template #default="{ row }">
-            {{ formatDateTime(row.createdAt) }}
-          </template>
-        </el-table-column>
-        <el-table-column label="最近登录" min-width="180">
-          <template #default="{ row }">
-            {{ formatDateTime(row.lastLoginAt) }}
-          </template>
-        </el-table-column>
-      </el-table>
+      <div class="table-shell">
+        <el-table :data="paginatedDirectoryMembers" empty-text="暂无会员数据" stripe>
+          <el-table-column label="昵称" min-width="160">
+            <template #default="{ row }">
+              <el-button
+                class="member-link-button"
+                link
+                type="primary"
+                @click="openDriverProfile(row.id)"
+              >
+                {{ row.nickname }}
+              </el-button>
+            </template>
+          </el-table-column>
+          <el-table-column label="用户名" prop="username" min-width="160" />
+          <el-table-column label="加入时间" min-width="180">
+            <template #default="{ row }">
+              {{ formatDateTime(row.createdAt) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="最近登录" min-width="180">
+            <template #default="{ row }">
+              {{ formatDateTime(row.lastLoginAt) }}
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
 
       <el-pagination
         v-if="filteredDirectoryMembers.length > memberDirectoryPageSize"
@@ -326,78 +332,80 @@
           当前显示 {{ filteredManagedMembers.length }} / {{ managedMembers.length }} 个会员
         </p>
 
-        <el-table :data="paginatedManagedMembers" empty-text="暂无会员数据" stripe>
-          <el-table-column label="群昵称" min-width="150">
-            <template #default="{ row }">
-              <el-button
-                v-if="row.status === 'ACTIVE' && row.approvalStatus === 'APPROVED'"
-                class="member-link-button"
-                link
-                type="primary"
-                @click="openDriverProfile(row.id)"
-              >
-                {{ row.nickname }}
-              </el-button>
-              <span v-else>{{ row.nickname }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column label="用户名" prop="username" min-width="150" />
-          <el-table-column label="账号状态" min-width="120">
-            <template #default="{ row }">
-              <el-tag :type="resolveStatusTagType(row.status)">
-                {{ formatUserStatus(row.status) }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column label="审核状态" min-width="120">
-            <template #default="{ row }">
-              <el-tag :type="resolveApprovalTagType(row.approvalStatus)">
-                {{ formatApprovalStatus(row.approvalStatus) }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column label="最近登录" min-width="180">
-            <template #default="{ row }">
-              {{ formatDateTime(row.lastLoginAt) }}
-            </template>
-          </el-table-column>
-          <el-table-column label="创建时间" min-width="180">
-            <template #default="{ row }">
-              {{ formatDateTime(row.createdAt) }}
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" min-width="260" align="right">
-            <template #default="{ row }">
-              <div class="table-actions table-actions-wrap">
+        <div class="table-shell">
+          <el-table :data="paginatedManagedMembers" empty-text="暂无会员数据" stripe>
+            <el-table-column label="群昵称" min-width="150">
+              <template #default="{ row }">
                 <el-button
-                  v-if="row.status === 'ACTIVE' || row.status === 'DISABLED'"
-                  :loading="memberStatusActionId === row.id"
-                  link
-                  :type="row.status === 'ACTIVE' ? 'warning' : 'success'"
-                  @click="toggleMemberStatus(row)"
-                >
-                  {{ row.status === "ACTIVE" ? "停用" : "启用" }}
-                </el-button>
-                <el-button
-                  :loading="memberPasswordActionId === row.id"
+                  v-if="row.status === 'ACTIVE' && row.approvalStatus === 'APPROVED'"
+                  class="member-link-button"
                   link
                   type="primary"
-                  @click="resetMemberPassword(row)"
+                  @click="openDriverProfile(row.id)"
                 >
-                  重置密码
+                  {{ row.nickname }}
                 </el-button>
-                <el-button
-                  :loading="memberDeleteActionId === row.id"
-                  link
-                  type="danger"
-                  @click="deleteManagedMember(row)"
-                >
-                  删除
-                </el-button>
-              </div>
-            </template>
-          </el-table-column>
-        </el-table>
+                <span v-else>{{ row.nickname }}</span>
+              </template>
+            </el-table-column>
+            <el-table-column label="用户名" prop="username" min-width="150" />
+            <el-table-column label="账号状态" min-width="120">
+              <template #default="{ row }">
+                <el-tag :type="resolveStatusTagType(row.status)">
+                  {{ formatUserStatus(row.status) }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="审核状态" min-width="120">
+              <template #default="{ row }">
+                <el-tag :type="resolveApprovalTagType(row.approvalStatus)">
+                  {{ formatApprovalStatus(row.approvalStatus) }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="最近登录" min-width="180">
+              <template #default="{ row }">
+                {{ formatDateTime(row.lastLoginAt) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="创建时间" min-width="180">
+              <template #default="{ row }">
+                {{ formatDateTime(row.createdAt) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" min-width="260" align="right">
+              <template #default="{ row }">
+                <div class="table-actions table-actions-wrap">
+                  <el-button
+                    v-if="row.status === 'ACTIVE' || row.status === 'DISABLED'"
+                    :loading="memberStatusActionId === row.id"
+                    link
+                    :type="row.status === 'ACTIVE' ? 'warning' : 'success'"
+                    @click="toggleMemberStatus(row)"
+                  >
+                    {{ row.status === "ACTIVE" ? "停用" : "启用" }}
+                  </el-button>
+                  <el-button
+                    :loading="memberPasswordActionId === row.id"
+                    link
+                    type="primary"
+                    @click="resetMemberPassword(row)"
+                  >
+                    重置密码
+                  </el-button>
+                  <el-button
+                    :loading="memberDeleteActionId === row.id"
+                    link
+                    type="danger"
+                    @click="deleteManagedMember(row)"
+                  >
+                    删除
+                  </el-button>
+                </div>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
 
         <el-pagination
           v-if="filteredManagedMembers.length > managedMemberPageSize"
@@ -698,71 +706,73 @@
           当前显示 {{ filteredRecords.length }} / {{ records.length }} 条正式成绩
         </p>
 
-        <el-table :data="paginatedRecords" empty-text="暂无正式成绩" stripe>
-          <el-table-column label="会员" min-width="150">
-            <template #default="{ row }">
-              <el-button
-                class="member-link-button"
-                link
-                type="primary"
-                @click="openDriverProfile(row.member.id)"
-              >
-                {{ row.member.nickname }}
-              </el-button>
-            </template>
-          </el-table-column>
-          <el-table-column label="赛道" min-width="180">
-            <template #default="{ row }">
-              {{ row.track.location ? `${row.track.name} / ${row.track.location}` : row.track.name }}
-            </template>
-          </el-table-column>
-          <el-table-column label="车型" min-width="120">
-            <template #default="{ row }">
-              {{ row.kartType.name }}
-            </template>
-          </el-table-column>
-          <el-table-column label="圈速" prop="lapTimeText" width="110" />
-          <el-table-column label="日期" min-width="120">
-            <template #default="{ row }">
-              {{ formatDate(row.raceDate) }}
-            </template>
-          </el-table-column>
-          <el-table-column label="来源" min-width="120">
-            <template #default="{ row }">
-              <el-tag :type="row.sourceType === 'ADMIN' ? 'primary' : 'success'">
-                {{ formatSourceType(row.sourceType) }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column label="备注摘要" min-width="240">
-            <template #default="{ row }">
-              {{ buildRecordSummary(row) }}
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="170" align="right">
-            <template #default="{ row }">
-              <div class="table-actions">
+        <div class="table-shell">
+          <el-table :data="paginatedRecords" empty-text="暂无正式成绩" stripe>
+            <el-table-column label="会员" min-width="150">
+              <template #default="{ row }">
                 <el-button
-                  :disabled="row.sourceType !== 'ADMIN'"
+                  class="member-link-button"
                   link
                   type="primary"
-                  @click="startEditRecord(row)"
+                  @click="openDriverProfile(row.member.id)"
                 >
-                  编辑
+                  {{ row.member.nickname }}
                 </el-button>
-                <el-button
-                  :disabled="row.sourceType !== 'ADMIN'"
-                  :loading="deletingRecordId === row.id"
-                  link
-                  type="danger"
-                  @click="deleteRecord(row)"
-                >
-                  删除
-                </el-button>
-              </div>
-            </template>
-          </el-table-column>
-        </el-table>
+              </template>
+            </el-table-column>
+            <el-table-column label="赛道" min-width="180">
+              <template #default="{ row }">
+                {{ row.track.location ? `${row.track.name} / ${row.track.location}` : row.track.name }}
+              </template>
+            </el-table-column>
+            <el-table-column label="车型" min-width="120">
+              <template #default="{ row }">
+                {{ row.kartType.name }}
+              </template>
+            </el-table-column>
+            <el-table-column label="圈速" prop="lapTimeText" width="110" />
+            <el-table-column label="日期" min-width="120">
+              <template #default="{ row }">
+                {{ formatDate(row.raceDate) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="来源" min-width="120">
+              <template #default="{ row }">
+                <el-tag :type="row.sourceType === 'ADMIN' ? 'primary' : 'success'">
+                  {{ formatSourceType(row.sourceType) }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="备注摘要" min-width="240">
+              <template #default="{ row }">
+                {{ buildRecordSummary(row) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="170" align="right">
+              <template #default="{ row }">
+                <div class="table-actions">
+                  <el-button
+                    :disabled="row.sourceType !== 'ADMIN'"
+                    link
+                    type="primary"
+                    @click="startEditRecord(row)"
+                  >
+                    编辑
+                  </el-button>
+                  <el-button
+                    :disabled="row.sourceType !== 'ADMIN'"
+                    :loading="deletingRecordId === row.id"
+                    link
+                    type="danger"
+                    @click="deleteRecord(row)"
+                  >
+                    删除
+                  </el-button>
+                </div>
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
 
         <el-pagination
           v-if="filteredRecords.length > recordPageSize"
@@ -861,37 +871,39 @@
           <el-tag type="success">{{ leaderboardGroup.items.length }} 人上榜</el-tag>
         </div>
 
-        <el-table :data="leaderboardGroup.items" stripe>
-          <el-table-column label="排名" prop="rank" width="80" />
-          <el-table-column label="会员" min-width="150">
-            <template #default="{ row }">
-              <el-button
-                class="member-link-button"
-                link
-                type="primary"
-                @click="openDriverProfile(row.member.id)"
-              >
-                {{ row.member.nickname }}
-              </el-button>
-            </template>
-          </el-table-column>
-          <el-table-column label="圈速" prop="lapTimeText" width="120" />
-          <el-table-column label="最终排名" width="120">
-            <template #default="{ row }">
-              {{ row.finalRanking ? `第 ${row.finalRanking} 名` : '-' }}
-            </template>
-          </el-table-column>
-          <el-table-column label="备注" min-width="220">
-            <template #default="{ row }">
-              {{ row.note || '-' }}
-            </template>
-          </el-table-column>
-          <el-table-column label="日期" min-width="140">
-            <template #default="{ row }">
-              {{ formatDate(row.raceDate) }}
-            </template>
-          </el-table-column>
-        </el-table>
+        <div class="table-shell">
+          <el-table :data="leaderboardGroup.items" stripe>
+            <el-table-column label="排名" prop="rank" width="80" />
+            <el-table-column label="会员" min-width="150">
+              <template #default="{ row }">
+                <el-button
+                  class="member-link-button"
+                  link
+                  type="primary"
+                  @click="openDriverProfile(row.member.id)"
+                >
+                  {{ row.member.nickname }}
+                </el-button>
+              </template>
+            </el-table-column>
+            <el-table-column label="圈速" prop="lapTimeText" width="120" />
+            <el-table-column label="最终排名" width="120">
+              <template #default="{ row }">
+                {{ row.finalRanking ? `第 ${row.finalRanking} 名` : '-' }}
+              </template>
+            </el-table-column>
+            <el-table-column label="备注" min-width="220">
+              <template #default="{ row }">
+                {{ row.note || '-' }}
+              </template>
+            </el-table-column>
+            <el-table-column label="日期" min-width="140">
+              <template #default="{ row }">
+                {{ formatDate(row.raceDate) }}
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
       </section>
     </section>
   </div>

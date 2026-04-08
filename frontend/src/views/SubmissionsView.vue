@@ -197,41 +197,43 @@
             当前显示 {{ filteredMySubmissions.length }} / {{ mySubmissions.length }} 条申请
           </p>
 
-          <el-table :data="paginatedMySubmissions" empty-text="你还没有提交过成绩申请" stripe>
-            <el-table-column label="赛道">
-              <template #default="{ row }">
-                {{ row.track.name }}
-              </template>
-            </el-table-column>
-            <el-table-column label="车型">
-              <template #default="{ row }">
-                {{ row.kartType.name }}
-              </template>
-            </el-table-column>
-            <el-table-column label="圈速" prop="lapTimeText" />
-            <el-table-column label="状态">
-              <template #default="{ row }">
-                <el-tag :type="resolveSubmissionTagType(row.status)">
-                  {{ formatSubmissionStatus(row.status) }}
-                </el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column label="备注" min-width="200">
-              <template #default="{ row }">
-                {{ row.note || "-" }}
-              </template>
-            </el-table-column>
-            <el-table-column label="截图">
-              <template #default="{ row }">
-                {{ row.attachments.length }} 张
-              </template>
-            </el-table-column>
-            <el-table-column label="审核备注" min-width="180">
-              <template #default="{ row }">
-                {{ row.reviewNote || "-" }}
-              </template>
-            </el-table-column>
-          </el-table>
+          <div class="table-shell">
+            <el-table :data="paginatedMySubmissions" empty-text="你还没有提交过成绩申请" stripe>
+              <el-table-column label="赛道">
+                <template #default="{ row }">
+                  {{ row.track.name }}
+                </template>
+              </el-table-column>
+              <el-table-column label="车型">
+                <template #default="{ row }">
+                  {{ row.kartType.name }}
+                </template>
+              </el-table-column>
+              <el-table-column label="圈速" prop="lapTimeText" />
+              <el-table-column label="状态">
+                <template #default="{ row }">
+                  <el-tag :type="resolveSubmissionTagType(row.status)">
+                    {{ formatSubmissionStatus(row.status) }}
+                  </el-tag>
+                </template>
+              </el-table-column>
+              <el-table-column label="备注" min-width="200">
+                <template #default="{ row }">
+                  {{ row.note || "-" }}
+                </template>
+              </el-table-column>
+              <el-table-column label="截图">
+                <template #default="{ row }">
+                  {{ row.attachments.length }} 张
+                </template>
+              </el-table-column>
+              <el-table-column label="审核备注" min-width="180">
+                <template #default="{ row }">
+                  {{ row.reviewNote || "-" }}
+                </template>
+              </el-table-column>
+            </el-table>
+          </div>
 
           <el-pagination
             v-if="filteredMySubmissions.length > mySubmissionPageSize"

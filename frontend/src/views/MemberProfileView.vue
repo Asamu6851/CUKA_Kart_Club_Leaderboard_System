@@ -459,45 +459,47 @@
           </div>
         </div>
 
-        <el-table :data="profile.records" empty-text="暂无正式成绩记录" stripe>
-          <el-table-column label="排序" width="84">
-            <template #default="{ $index }">
-              {{ $index + 1 }}
-            </template>
-          </el-table-column>
-          <el-table-column label="赛道" min-width="180">
-            <template #default="{ row }">
-              <div class="table-primary-cell">
-                <strong>{{ row.track.name }}</strong>
-                <span v-if="row.track.location">{{ row.track.location }}</span>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column label="车型" min-width="140">
-            <template #default="{ row }">
-              {{ row.kartType.name }}
-            </template>
-          </el-table-column>
-          <el-table-column label="圈速" prop="lapTimeText" width="120" />
-          <el-table-column label="排名" width="110">
-            <template #default="{ row }">
-              {{ formatRanking(row.finalRanking) }}
-            </template>
-          </el-table-column>
-          <el-table-column label="备注" min-width="240">
-            <template #default="{ row }">
-              <div class="table-note-cell">
-                <span>{{ row.note || "-" }}</span>
-                <small v-if="row.weather">{{ row.weather }}</small>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column label="日期" min-width="140">
-            <template #default="{ row }">
-              {{ formatDate(row.raceDate) }}
-            </template>
-          </el-table-column>
-        </el-table>
+        <div class="table-shell">
+          <el-table :data="profile.records" empty-text="暂无正式成绩记录" stripe>
+            <el-table-column label="排序" width="84">
+              <template #default="{ $index }">
+                {{ $index + 1 }}
+              </template>
+            </el-table-column>
+            <el-table-column label="赛道" min-width="180">
+              <template #default="{ row }">
+                <div class="table-primary-cell">
+                  <strong>{{ row.track.name }}</strong>
+                  <span v-if="row.track.location">{{ row.track.location }}</span>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="车型" min-width="140">
+              <template #default="{ row }">
+                {{ row.kartType.name }}
+              </template>
+            </el-table-column>
+            <el-table-column label="圈速" prop="lapTimeText" width="120" />
+            <el-table-column label="排名" width="110">
+              <template #default="{ row }">
+                {{ formatRanking(row.finalRanking) }}
+              </template>
+            </el-table-column>
+            <el-table-column label="备注" min-width="240">
+              <template #default="{ row }">
+                <div class="table-note-cell">
+                  <span>{{ row.note || "-" }}</span>
+                  <small v-if="row.weather">{{ row.weather }}</small>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="日期" min-width="140">
+              <template #default="{ row }">
+                {{ formatDate(row.raceDate) }}
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
       </section>
 
       <section v-if="profile.viewer.canViewPrivateSubmissions" class="panel-card form-card">
@@ -523,52 +525,54 @@
           </article>
         </div>
 
-        <el-table :data="profile.submissions" empty-text="暂无提交记录" stripe>
-          <el-table-column label="赛道" min-width="180">
-            <template #default="{ row }">
-              <div class="table-primary-cell">
-                <strong>{{ row.track.name }}</strong>
-                <span v-if="row.track.location">{{ row.track.location }}</span>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column label="车型" min-width="140">
-            <template #default="{ row }">
-              {{ row.kartType.name }}
-            </template>
-          </el-table-column>
-          <el-table-column label="圈速" prop="lapTimeText" width="120" />
-          <el-table-column label="状态" width="110">
-            <template #default="{ row }">
-              <el-tag :type="resolveSubmissionTagType(row.status)">
-                {{ formatSubmissionStatus(row.status) }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column label="备注" min-width="220">
-            <template #default="{ row }">
-              <div class="table-note-cell">
-                <span>{{ row.note || "-" }}</span>
-                <small v-if="row.weather">{{ row.weather }}</small>
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column label="截图" width="110">
-            <template #default="{ row }">
-              {{ row.attachments.length }} 张
-            </template>
-          </el-table-column>
-          <el-table-column label="审核备注" min-width="180">
-            <template #default="{ row }">
-              {{ row.reviewNote || "-" }}
-            </template>
-          </el-table-column>
-          <el-table-column label="提交时间" min-width="160">
-            <template #default="{ row }">
-              {{ formatDateTime(row.createdAt) }}
-            </template>
-          </el-table-column>
-        </el-table>
+        <div class="table-shell">
+          <el-table :data="profile.submissions" empty-text="暂无提交记录" stripe>
+            <el-table-column label="赛道" min-width="180">
+              <template #default="{ row }">
+                <div class="table-primary-cell">
+                  <strong>{{ row.track.name }}</strong>
+                  <span v-if="row.track.location">{{ row.track.location }}</span>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="车型" min-width="140">
+              <template #default="{ row }">
+                {{ row.kartType.name }}
+              </template>
+            </el-table-column>
+            <el-table-column label="圈速" prop="lapTimeText" width="120" />
+            <el-table-column label="状态" width="110">
+              <template #default="{ row }">
+                <el-tag :type="resolveSubmissionTagType(row.status)">
+                  {{ formatSubmissionStatus(row.status) }}
+                </el-tag>
+              </template>
+            </el-table-column>
+            <el-table-column label="备注" min-width="220">
+              <template #default="{ row }">
+                <div class="table-note-cell">
+                  <span>{{ row.note || "-" }}</span>
+                  <small v-if="row.weather">{{ row.weather }}</small>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column label="截图" width="110">
+              <template #default="{ row }">
+                {{ row.attachments.length }} 张
+              </template>
+            </el-table-column>
+            <el-table-column label="审核备注" min-width="180">
+              <template #default="{ row }">
+                {{ row.reviewNote || "-" }}
+              </template>
+            </el-table-column>
+            <el-table-column label="提交时间" min-width="160">
+              <template #default="{ row }">
+                {{ formatDateTime(row.createdAt) }}
+              </template>
+            </el-table-column>
+          </el-table>
+        </div>
       </section>
     </template>
   </div>
